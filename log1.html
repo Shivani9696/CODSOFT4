@@ -1,0 +1,81 @@
+<?php
+// Connect to the database
+
+  $servername = "localhost";
+  $username = "root";
+  $password = "";
+  $dbname = "webtask";
+
+  // Create a connection
+  $conn = mysqli_connect($servername, $username, $password, $dbname);
+
+  // Check the connection
+  if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+  }
+
+  // Retrieve the form data
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+
+  // Prepare the SQL statement
+  $sql = "SELECT * FROM users WHERE email='$email'";
+
+  // Execute the SQL statement
+  $result = mysqli_query($conn, $sql);
+
+  // Check if the user exists
+  if (mysqli_num_rows($result) == 1) {
+    $user = mysqli_fetch_assoc($result);
+
+    // Verify the password
+    if ($password == $user['password']) {
+      // Set session variables
+      $_SESSION['user_id'] = $user['id'];
+      $_SESSION['username'] = $user['username'];
+      $_SESSION['email'] = $user['email'];
+
+      // Redirect to the home page
+      header("Location: http://localhost/webtask/index.php");
+      exit;
+    } else {
+      echo "Error: Invalid password";
+    }
+  } else {
+    echo "Error: User not found";
+  }
+
+  // Close the connection
+  mysqli_close($conn);
+}
+?>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="log1.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="wrapper">
+      <div class="title"><span>Login Form</span></div>
+      <form method="post" action="<?php echo $_SERVER['PHP_SELF']?>">
+        <div class="row">
+          <i class="fas fa-user"></i>
+          <input type="email" name="email" placeholder="Email " required>
+        </div>
+        <div class="row">
+          <i class="fas fa-lock"></i>
+          <input type="password" name="password" placeholder="Password" required>
+        </div>
+        <div class="pass"><a href="#">Forgot password?</a></div>
+        <div class="row button">
+          <center><button id="signupSubmit" type="submit" name="submit" class="btn btn-info btn-block"><span>log in</span></button></center>
+        </div>
+      </form>
+      </div>
+    </div>
+</body>
+</html>
